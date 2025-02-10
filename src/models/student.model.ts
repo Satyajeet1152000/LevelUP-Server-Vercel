@@ -65,6 +65,11 @@ const pastExperienceSchema = new Schema({
 // Student schema definition
 const StudentSchema: Schema = new Schema(
     {
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: [true, 'Please provide your mentor id'],
+        },
         studentCode: {
             type: String,
             required: [true, 'Please provide your student code'],

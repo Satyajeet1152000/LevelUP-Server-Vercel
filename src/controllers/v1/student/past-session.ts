@@ -1,9 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import Student from '../../../models/student.model.js';
 import asyncHandler from '../../../utils/AsyncHandler.js';
 import ApiError from '../../../utils/ApiError.js';
 import ApiResponse from '../../../utils/ApiResponse.js';
 import Session from '../../../models/sessions.model.js';
+import mongoose from 'mongoose';
 
 interface AuthenticatedRequest extends Request {
     user?: {
@@ -12,62 +13,56 @@ interface AuthenticatedRequest extends Request {
     };
 }
 
-const pastSession = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    // Extract the authenticated user's ID from the request
-    const userId = req.user?._id;
+const pastSession = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { studentId } = req.params;
+    const { skip, limit } = req.query;
 
-    //  current time
-    const now = new Date();
+    const page = parseInt(skip as string) || 0;
+    const limitValue = parseInt(limit as string) || 10;
+    const skipValue = page * limitValue;
 
-    // Pagination parameters from query
-    const page = parseInt(req.query.page as string, 5) || 1; // Default page is 1
-    const limit = parseInt(req.query.limit as string, 5) || 5; // Default limit is  5
-    const skip = (page - 1) * limit;
-
-    // Find the student associated with the authenticated user
-    const student = await Student.findOne({ _id: userId }).populate({
-        path: 'bookedSessions',
-        model: Session,
-        match: { endTime: { $lt: now }, status: 'approve' },
-        select: 'title description type startTime endTime status',
-        options: { skip, limit },
-    });
-
-    if (!student) {
-        return next(new ApiError(404, 'Student not found'));
+    if (!studentId) {
+        throw new ApiError(400, 'Student ID is required');
     }
 
-    const pastSessions = student.bookedSessions;
+    const student = await Student.findById(studentId);
+    if (!student) {
+        throw new ApiError(400, 'Student not found');
+    }
+
+    const studentID = new mongoose.Types.ObjectId(studentId);
+    const pastSessions = await Session.aggregate([
+        {
+            $match: {
+                'sessionMembers.joinee.userId': studentID,
+                endTime: { $lt: new Date() },
+            },
+        },
+        {
+            $project: {
+                title: 1,
+                type: 1,
+                sessionMembers: 1,
+                recordingSrc: 1,
+                courseId: 1,
+                startTime: 1,
+                endTime: 1,
+                status: 1,
+            },
+        },
+        {
+            $skip: skipValue,
+        },
+        {
+            $limit: limitValue,
+        },
+    ]);
 
     if (!pastSessions || pastSessions.length === 0) {
-        return res.status(200).json(new ApiResponse(200, [], 'No past sessions found'));
+        throw new ApiError(400, 'No past sessions found');
     }
 
-    // Get the total count of past sessions for pagination
-    const totalPastSessions = await Session.countDocuments({
-        /* eslint-disable @typescript-eslint/no-explicit-any */
-        _id: { $in: student.bookedSessions.map((s: any) => s._id) },
-        endTime: { $lt: now },
-        status: 'approve',
-    });
-
-    const totalPages = Math.ceil(totalPastSessions / limit);
-
-    return res.status(200).json(
-        new ApiResponse(
-            200,
-            {
-                sessions: pastSessions,
-                pagination: {
-                    page,
-                    limit,
-                    totalPages,
-                    totalRecords: totalPastSessions,
-                },
-            },
-            'Past sessions retrieved successfully'
-        )
-    );
+    return res.status(200).json(new ApiResponse(200, 'Past sessions found', pastSessions));
 });
 
 export default pastSession;

@@ -1,211 +1,389 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "version": "1.0.0",
-    "title": "Masai Level Up API",
-    "description": "This is a working server for Masai Level Up API. It is a Node.js application that uses Express.js as the web framework. It provides a RESTful API for managing user accounts, courses, and sessions."
-  },
-  "host": "localhost:3000",
-  "servers": [
-    {
-      "url": "",
-      "description": ""
-    }
-  ],
-  "basePath": "/api/v1",
-  "tags": [
-    {
-      "name": "",
-      "description": ""
-    }
-  ],
-  "schemes": [
-    "http"
-  ],
-  "paths": {
-    "/auth/register": {
-      "post": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
+    "swagger": "2.0",
+    "info": {
+        "title": "Masai Level Up API",
+        "description": "This is a working server for Masai Level Up API. It is a Node.js application that uses Express.js as the web framework. It provides a RESTful API for managing user accounts, courses, and sessions.",
+        "version": "1.0.0"
     },
-    "/auth/login": {
-      "post": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/auth/logout": {
-      "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/auth/refreshAccessToken": {
-      "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/auth/forget-password": {
-      "post": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/auth/reset-password/{token}": {
-      "post": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/student/profile-setup": {
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/mentor/profile-setup": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "mentorId": {
-                  "example": "any"
-                },
-                "currentCourses": {
-                  "example": "any"
-                },
-                "slots": {
-                  "example": "any"
+    "host": "localhost:3000",
+    "basePath": "/api/v1",
+    "schemes": ["http", "https"],
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
                 }
-              }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/mentor/get-requested-sessions/{mentorId}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "mentorId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/mentor/session-approve": {
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "mentorId": {
-                  "example": "any"
-                },
-                "sessionId": {
-                  "example": "any"
-                },
-                "sessionStatus": {
-                  "example": "any"
+        },
+        "/auth/login": {
+            "post": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
                 }
-              }
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
+        },
+        "/auth/logout": {
+            "get": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/auth/refreshAccessToken": {
+            "get": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/auth/forget-password": {
+            "post": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/auth/reset-password/{token}": {
+            "post": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/auth/switch-role": {
+            "post": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/auth/meeting-details/{id}": {
+            "get": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/create-meeting": {
+            "post": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "title": {
+                                    "example": "any"
+                                },
+                                "type": {
+                                    "example": "any"
+                                },
+                                "startTime": {
+                                    "example": "any"
+                                },
+                                "duration": {
+                                    "example": "any"
+                                },
+                                "description": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/student/profile-setup": {
+            "post": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "studentCode": {
+                                    "example": "any"
+                                },
+                                "subRole": {
+                                    "example": "any"
+                                },
+                                "enrolledCourses": {
+                                    "example": "any"
+                                },
+                                "currentCourses": {
+                                    "example": "any"
+                                },
+                                "skills": {
+                                    "example": "any"
+                                },
+                                "bookedSessions": {
+                                    "example": "any"
+                                },
+                                "educationDetails": {
+                                    "example": "any"
+                                },
+                                "pastExperience": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Created"
+                    }
+                }
+            }
+        },
+        "/student/{studentCode}": {
+            "get": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "studentCode",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/student/get-upcoming-sessions": {
+            "get": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/student/get-past-sessions": {
+            "get": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/mentor/profile-setup": {
+            "post": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "example": "any"
+                                },
+                                "currentCourses": {
+                                    "example": "any"
+                                },
+                                "skills": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/mentor/get-sessions/{mentorId}": {
+            "get": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "mentorId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/mentor/session-approve": {
+            "put": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "mentorId": {
+                                    "example": "any"
+                                },
+                                "sessionId": {
+                                    "example": "any"
+                                },
+                                "sessionStatus": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/mentor/get-past-session/{mentorId}": {
+            "get": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "mentorId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "type": "string"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/admin/user-approval": {
+            "post": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "example": "any"
+                                },
+                                "status": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/admin/update-role-and-sub-role": {
+            "post": {
+                "description": "",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "userId": {
+                                    "example": "any"
+                                },
+                                "role": {
+                                    "example": "any"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
         }
-      }
-    },
-    "/mentor/get-past-session/{mentorId}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "mentorId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/mentor/get-present-session/{mentorId}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "mentorId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
     }
-  }
 }

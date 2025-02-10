@@ -5,6 +5,7 @@ import config from './config/config.js';
 
 let server: any;
 
+mongoose.set('runValidators', true);
 mongoose
     .connect(config.MONGODB_URI)
     .then(() => {

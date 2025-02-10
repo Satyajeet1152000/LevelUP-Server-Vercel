@@ -1,0 +1,32 @@
+{
+    "info": {
+        "title": "Masai Level Up API",
+        "description": "This is a working server for Masai Level Up API. It is a Node.js application that uses Express.js as the web framework. It provides a RESTful API for managing user accounts, courses, and sessions.",
+        "version": "1.0.0"
+    },
+    "host": "localhost:3000",
+    "basePath": "/api/v1",
+    "schemes": ["http", "https"],
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        }
+    }
+}

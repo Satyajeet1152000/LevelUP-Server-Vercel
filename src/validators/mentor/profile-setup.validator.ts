@@ -1,7 +1,7 @@
 import { body } from 'express-validator';
 
 const profileSetupValidation = [
-    body('mentorId')
+    body('userId')
         .isString()
         .withMessage('Mentor ID is required')
         .bail()
@@ -15,7 +15,7 @@ const profileSetupValidation = [
         .isLength({ min: 1 })
         .withMessage('Invalid current courses'),
 
-    body('slots').isArray().withMessage('Slots is required'),
+    body('skills').isArray().withMessage('Skills is required').bail().isLength({ min: 1 }).withMessage('Invalid skills'),
 ];
 
 export default profileSetupValidation;

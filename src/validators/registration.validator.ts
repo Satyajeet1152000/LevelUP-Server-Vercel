@@ -12,7 +12,7 @@ const registrationValidation = [
 
     body('password').isString().isLength({ min: 6 }).withMessage('Password is required'),
 
-    body('phoneNumber').isNumeric().isLength({ min: 10 }).withMessage('Phone number is required'),
+    body('phoneNumber').isNumeric().isLength({ max: 10 }).withMessage('Phone number is required'),
 ];
 
 export default registrationValidation;

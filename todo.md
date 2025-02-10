@@ -19,8 +19,10 @@ Request: course
 Response: mentors list [name, slots]
 
 post> /student/session-request
-Request: mentorId, courseId, slot, title, description, isSolo
+Request: mentorId, courseId, studentID slot, title, description, joinee's emails
 Response: true false
+
+mentors based on courses
 
 get > /student/get-past-session  
 get > /student/get-present-session
@@ -41,3 +43,56 @@ get> /mentor/get-present-session
 get> /mentor/get-future-session
 
 get mentors by course
+
+admin get get all users | pending users
+create slot
+
+Dashboard
+Book sessions > get > tit
+
+session details > title times instructors status course_short
+route
+
+Courses Schema
+courseId
+courseName
+category
+
+Routes
+/course/get-all-courses
+/course/get-courses
+Request: category
+Response: course list
+
+/admin/pending-users-list  
+/admin/users-approval
+        Request: userId, status, role
+Response: true false
+
+/student/profile-setup
+        Request: studentCode, currentCourses, skills
+        Response: true false
+/student/profile-book-session
+        Request: studentId, mentorId, courseId, title, description, joinee's emails[], startTime, endTime
+        Response: true false
+
+/student/upcoming-session -> logic correction
+/student/past-session
+
+/mentor/profile-setup
+        Request: mentorId, currentCourses, skills
+        Response: true false
+/mentor/get-past-session -> logic correction
+/mentor/create-slot
+        Request: mentorId, slots
+        Response: true false
+
+
+
+
+
+
+
+
+
+

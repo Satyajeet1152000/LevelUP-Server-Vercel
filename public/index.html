@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Masai Level Up API Docs</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+            .api-docs {
+                max-width: 1200px;
+                margin: 0 auto;
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            .api-endpoint {
+                margin-bottom: 20px;
+                padding: 15px;
+                border-radius: 5px;
+            }
+            .api-endpoint h3 {
+                margin: 0;
+                font-size: 18px;
+            }
+            .api-endpoint p {
+                margin: 5px 0;
+                font-size: 14px;
+            }
+            .api-endpoint code {
+                display: block;
+                padding: 10px;
+                background-color: #e1e1e1;
+                border-radius: 5px;
+                font-size: 14px;
+                white-space: pre-wrap;
+            }
+            .api-description {
+                font-size: 14px;
+                color: #555;
+            }
+
+            #POST {
+                background-color: #3fb1ff4d;
+                border: 2px solid #3fb1ff;
+            }
+            #POST > div > h3 {
+                background-color: #1fa0f7;
+                color: white;
+                padding: 5px 10px;
+                border-radius: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="api-docs">
+            <!-- The API details will be dynamically inserted here -->
+        </div>
+
+        <script>
+            // Function to fetch and display API documentation
+            async function fetchAPIDocs() {
+                try {
+                    const response = await fetch('api-doc.json'); // Fetch the api-docs.json file
+                    const data = await response.json();
+                    const apiDocsContainer = document.querySelector('.api-docs');
+
+                    // Display API info
+                    const apiInfo = `
+                    <h1>${data.info.title}</h1>
+                    <p>${data.info.description}</p>
+                    <p><strong>Version:</strong> ${data.info.version}</p>
+                    <p><strong>Host:</strong> ${data.host}</p>
+                    <p><strong>Base Path:</strong> ${data.basePath}</p>
+                    <h3>Endpoints</h3>
+                `;
+                    apiDocsContainer.innerHTML = apiInfo;
+
+                    // Loop through each API path and display its details
+                    for (const path in data.paths) {
+                        const pathData = data.paths[path];
+                        for (const method in pathData) {
+                            const endpointDetails = pathData[method];
+                            const methodType = method.toUpperCase();
+
+                            const endpointHTML = `
+                            <div class="api-endpoint" id="${methodType}">
+                                <div style="display: flex; align-items: center;gap: 10px;">
+                                    <h3>${methodType}</h3>
+                                    <h4>${path}</h4>
+                                </div>
+                                <p class="api-description">${endpointDetails.description || 'No description available'}</p>
+                                <code>Response: ${JSON.stringify(endpointDetails.responses, null, 2)}</code>
+                            </div>
+                        `;
+                            apiDocsContainer.innerHTML += endpointHTML;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching API docs:', error);
+                }
+            }
+
+            // Call the function to fetch API docs when the page loads
+            window.onload = fetchAPIDocs;
+        </script>
+    </body>
+</html>

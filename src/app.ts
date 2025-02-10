@@ -11,6 +11,8 @@ import router from './routes/index.js';
 
 const app = express();
 
+// app.use('/api-docs', express.static('public'));
+
 app.use(morgan(config.NODE_ENV === 'development' ? 'dev' : 'combined'));
 
 // set security HTTP headers
@@ -35,6 +37,7 @@ app.options('*', cors());
 
 // ==================== Routes ====================
 app.use('/api/v1', router);
+// swaggerDocs(app, parseInt(config.PORT as string));
 
 app.use(errorHandler as (err: any, req: Request, res: Response, next: NextFunction) => void);
 

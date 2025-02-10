@@ -6,7 +6,12 @@ import Session from '../../../models/sessions.model.js';
 import Mentor from '../../../models/mentor.model.js';
 
 export const sessionApprove = asyncHandler(async (req: Request, res: Response) => {
-    const { mentorId, sessionId, sessionStatus } = req.body;
+    const { sessionId, sessionStatus, sessionJoinLink } = req.body;
+    const { mentorId } = req.params;
+
+    if (!sessionId || !sessionStatus || !mentorId || !sessionJoinLink) {
+        throw new ApiError(400, 'Session ID, Session Status, Mentor ID and Session Join Link are required');
+    }
 
     const mentor = await Mentor.findById(mentorId);
     if (!mentor) {
@@ -17,14 +22,12 @@ export const sessionApprove = asyncHandler(async (req: Request, res: Response) =
     if (!session) {
         throw new ApiError(400, 'Session not found');
     }
-
-    const zoomLink = 'https://zoom.us/j/987654321';
     session.status = sessionStatus;
-    session.sessionJoinLink = zoomLink;
-    await session.save();
+    session.sessionJoinLink = sessionJoinLink;
+    await session.save({ validateBeforeSave: false });
 
     mentor.bookedSessions.push(sessionId);
-    await mentor.save();
+    await mentor.save({ validateBeforeSave: false });
 
-    return res.status(200).json(new ApiResponse(200, {}, 'Session approved successfully'));
+    return res.status(200).json(new ApiResponse(200, 'Session approved successfully'));
 });

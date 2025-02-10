@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import asyncHandler from '../../../utils/AsyncHandler.js';
 import ApiError from '../../../utils/ApiError.js';
 import ApiResponse from '../../../utils/ApiResponse.js';
@@ -9,13 +9,14 @@ import jwt from 'jsonwebtoken';
 // generate a token
 // send reset link to user email
 
-const resetPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+const resetPassword = asyncHandler(async (req: Request, res: Response) => {
     const token = req.params.token;
     const password = req.body.password;
     if (password.trim().length == 0) {
         throw new ApiError(401, 'Password is required');
     }
     const decode = jwt.verify(token, process.env.JWT_RESET_PASSWORD_SECRET as string);
+
     if (!decode) {
         throw new ApiError(401, 'Invalid or expired token');
     }
@@ -27,7 +28,7 @@ const resetPassword = asyncHandler(async (req: Request, res: Response, next: Nex
     user.password = password;
     await user.save({ validateBeforeSave: false });
     // send email to user that password has been reset
-    return res.status(200).json(new ApiResponse(200, {}, 'Password reset successfully'));
+    return res.status(200).json(new ApiResponse(200, 'Password reset successfully'));
 });
 
 export default resetPassword;

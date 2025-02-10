@@ -1,39 +1,42 @@
-import swaggerAutogen from 'swagger-autogen';
+import { Express, Request, Response } from 'express';
+import swaggerJSDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+// import {version} from '../package.json';
 
-const doc = {
-    info: {
-        version: '', // by default: '1.0.0'
-        title: 'Masai Level Up API', // by default: 'Swagger API'
-        description:
-            'This is a working server for Masai Level Up API. It is a Node.js application that uses Express.js as the web framework. It provides a RESTful API for managing user accounts, courses, and sessions.',
+const options: swaggerJSDoc.Options = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Masai Level Up API',
+            description:
+                'This is a working server for Masai Level Up API. It is a Node.js application that uses Express.js as the web framework. It provides a RESTful API for managing user accounts, courses, and sessions.',
+            version: '1.0.0',
+        },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+        security: [{ bearerAuth: [] }],
     },
-
-    host: 'localhost:3000',
-    schemes: ['http'],
-    basePath: '/api/v1',
-
-    servers: [
-        {
-            url: '', // by default: 'http://localhost:3000'
-            description: '', // by default: ''
-        },
-        // { ... }
-    ],
-    tags: [
-        // by default: empty Array
-        {
-            name: '', // Tag name
-            description: '', // Tag description
-        },
-        // { ... }
-    ],
-    components: {}, // by default: empty object
+    apis: ['./src/routes/*.ts', './src/models/*.ts'],
 };
 
-const outputFile = 'src/api-docs.json';
-const routes = ['src/routes/index.ts'];
+const swaggerSpec = swaggerJSDoc(options);
 
-/* NOTE: If you are using the express Router, you must pass in the 'routes' only the 
-root file where the route starts, such as index.js, app.js, routes.js, etc ... */
+function swaggerDocs(app: Express, port: number) {
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-swaggerAutogen()(outputFile, routes, doc);
+    app.get('docs.json', (_req: Request, res: Response) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(swaggerSpec);
+    });
+
+    console.log(`Docs available at http://localhost:${port}/api-docs`);
+}
+
+export default swaggerDocs;

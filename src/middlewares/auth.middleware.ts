@@ -4,6 +4,7 @@ import asyncHandler from '../utils/AsyncHandler.js';
 import ApiError from '../utils/ApiError.js';
 import jwt from 'jsonwebtoken';
 import User, { UserInterface } from '../models/user.model.js';
+import logger from '../config/logger.js';
 
 // Extend the Express Request type
 interface AuthenticatedRequest extends Request {
@@ -18,7 +19,7 @@ interface DecodedToken {
 
 const authMiddleware = (roles: any) => {
     return asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        let incomingToken = req.cookies.access_token || req.headers.authorization?.replace('Bearer ', '');
+        const incomingToken = req.cookies.access_token || req.headers.authorization?.replace('Bearer ', '');
         if (!incomingToken) {
             throw new ApiError(401, 'Unauthorized Request');
         }
@@ -27,15 +28,16 @@ const authMiddleware = (roles: any) => {
         try {
             decoded = jwt.verify(incomingToken, process.env.JWT_ACCESS_SECRET as string) as DecodedToken;
         } catch (error) {
+            logger.error(error);
             throw new ApiError(401, 'Invalid or Expired Token');
         }
 
-        let user = (await User.findById(decoded._id)) as Document<unknown, {}, UserInterface> &
+        const user = (await User.findById(decoded._id)) as Document<unknown, {}, UserInterface> &
             UserInterface & { _id: string };
         if (!user) {
             throw new ApiError(401, 'Invalid Token');
         }
-        let incomingRole = req.cookies.role || req.headers.role;
+        const incomingRole = req.cookies.role || req.headers.role;
         if (!roles.includes(incomingRole)) {
             throw new ApiError(401, 'Unauthorized Request');
         }

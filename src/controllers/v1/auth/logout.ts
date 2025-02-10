@@ -31,7 +31,7 @@ const logout = asyncHandler(async (req: AuthenticatedRequest, res: Response, nex
         .clearCookie('accessToken', options)
         .clearCookie('refreshToken', options)
         .clearCookie('role', options)
-        .json(new ApiResponse(200, {}, 'User logged out'));
+        .json(new ApiResponse(200, 'User logged out'));
 });
 
 export default logout;

@@ -3,6 +3,8 @@ import asyncHandler from '../../../utils/AsyncHandler.js';
 import ApiError from '../../../utils/ApiError.js';
 import ApiResponse from '../../../utils/ApiResponse.js';
 import Session from '../../../models/sessions.model.js';
+import mongoose from 'mongoose';
+import Mentor from '../../../models/mentor.model.js';
 
 export const getPastSession = asyncHandler(async (req: Request, res: Response) => {
     const { mentorId } = req.params;
@@ -16,35 +18,29 @@ export const getPastSession = asyncHandler(async (req: Request, res: Response) =
         throw new ApiError(400, 'Mentor ID is required');
     }
 
+    const mentor = await Mentor.findById(mentorId);
+    if (!mentor) {
+        throw new ApiError(400, 'Mentor not found');
+    }
+
+    const mentorID = new mongoose.Types.ObjectId(mentorId);
     const pastSessions = await Session.aggregate([
         {
             $match: {
-                sessionMembers: {
-                    host: {
-                        userId: mentorId,
-                    },
-                },
-                status: 'completed',
+                'sessionMembers.host.userId': mentorID,
+                endTime: { $lt: new Date() },
             },
         },
-        // {
-        //   $lookup: {
-        //     from: 'Course',
-        //     localField: 'courseId',
-        //     foreignField: '_id',
-        //     as: 'course',
-        //   },
-        // },
-        // { $unwind: '$course' },
         {
             $project: {
                 title: 1,
                 type: 1,
                 sessionMembers: 1,
                 recordingSrc: 1,
+                courseId: 1,
                 startTime: 1,
                 endTime: 1,
-                // course: '$course.name',
+                status: 1,
             },
         },
         {
@@ -55,9 +51,9 @@ export const getPastSession = asyncHandler(async (req: Request, res: Response) =
         },
     ]);
 
-    if (!pastSessions) {
+    if (!pastSessions || pastSessions.length === 0) {
         throw new ApiError(400, 'No past sessions found');
     }
 
-    return res.status(200).json(new ApiResponse(200, pastSessions, 'Past sessions found'));
+    return res.status(200).json(new ApiResponse(200, 'Past sessions found', pastSessions));
 });

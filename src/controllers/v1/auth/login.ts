@@ -1,9 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import asyncHandler from '../../../utils/AsyncHandler.js';
 import User from '../../../models/user.model.js';
 import ApiError from '../../../utils/ApiError.js';
 import ApiResponse from '../../../utils/ApiResponse.js';
 import jwt from 'jsonwebtoken';
+import logger from '../../../config/logger.js';
 
 interface IGenerateTokens {
     accessToken: string;
@@ -18,21 +19,23 @@ async function generateAccessTokenAndRefreshToken(user: any): Promise<IGenerateT
         await user.save({ validateBeforeSave: false });
         return { accessToken, refreshToken };
     } catch (error) {
+        logger.error(error);
         throw new ApiError(500, 'Error generating access token and refresh token');
     }
 }
 
-const login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+const login = asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-        throw new ApiError(400, 'Please Signup first');
+        throw new ApiError(400, 'Please Signup first, Email not found');
     }
     const isPasswordCorrect = await user.isPasswordCorrect(password);
     if (!isPasswordCorrect) {
         throw new ApiError(400, 'Invalid password');
     }
     const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(user);
+
     const role = jwt.sign({ role: user.role }, process.env.ROLE_BASE_TOKEN_SECRET as string, {
         expiresIn: parseInt(process.env.ROLE_BASE_TOKEN_EXPIRY as string),
     });
@@ -45,7 +48,7 @@ const login = asyncHandler(async (req: Request, res: Response, next: NextFunctio
         .cookie('refreshToken', refreshToken, options)
         .cookie('accessToken', accessToken, options)
         .cookie('role', role, options)
-        .json(new ApiResponse(200, user, 'Login successful'));
+        .json(new ApiResponse(200, 'Login successful', user));
 });
 
 export default login;

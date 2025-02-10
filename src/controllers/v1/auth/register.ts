@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import User from '../../../models/user.model.js';
 import asyncHandler from '../../../utils/AsyncHandler.js';
 import ApiError from '../../../utils/ApiError.js';
@@ -15,16 +15,16 @@ function isAlreadyRegistered(email: string): Promise<boolean> {
     return User.findOne({ email }).then((user) => !!user);
 }
 
-const register = asyncHandler(async (req: RegisterRequest, res: Response, next: NextFunction) => {
+const register = asyncHandler(async (req: RegisterRequest, res: Response) => {
     if (await isAlreadyRegistered(req.body.email)) {
         throw new ApiError(400, 'User already registered');
     }
-    let user = await User.create(req.body);
+    const user = await User.create(req.body);
     if (!user) {
         throw new ApiError(500, 'Error occured while registering user.');
     }
 
-    return res.status(200).json(new ApiResponse(200, {}, 'Successfully Registered'));
+    return res.status(200).json(new ApiResponse(200, 'Successfully Registered'));
 });
 
 export default register;

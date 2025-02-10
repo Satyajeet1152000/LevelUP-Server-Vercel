@@ -3,50 +3,27 @@ import Student from '../../../models/student.model.js';
 import ApiError from '../../../utils/ApiError.js';
 import asyncHandler from '../../../utils/AsyncHandler.js';
 import ApiResponse from '../../../utils/ApiResponse.js';
+import User from '../../../models/user.model.js';
 
 // Create or Update Student Profile
-export const profileSetup = asyncHandler(async (req: Request, res: Response) => {
-    const {
-        studentCode,
-        subRole,
-        enrolledCourses,
-        currentCourses,
-        skills,
-        bookedSessions,
-        educationDetails,
-        pastExperience,
-    } = req.body;
+const profileSetup = asyncHandler(async (req: Request, res: Response) => {
+    const { userId, studentCode, currentCourses, skills } = req.body;
 
-    let student = await Student.findOne({ studentCode });
-
-    if (!student) {
-        student = await Student.create(req.body);
-        return res.status(201).json(new ApiResponse(201, student, 'Profile created successfully.'));
+    const user = await User.findById(userId);
+    if (user?.role !== 'student') {
+        throw new ApiError(400, 'User is not a student');
     }
 
-    // If student exists, update the profile
-    student.subRole = subRole || student.subRole;
-    student.enrolledCourses = enrolledCourses || student.enrolledCourses;
-    student.currentCourse = currentCourses || student.currentCourse;
-    student.skills = skills || student.skills;
-    student.bookedSessions = bookedSessions || student.bookedSessions;
-    student.educationDetails = educationDetails || student.educationDetails;
-    student.pastExperience = pastExperience || student.pastExperience;
-
-    await student.save({ validateBeforeSave: false });
-
-    res.status(200).json(new ApiResponse(200, student, 'Profile updated successfully.'));
-});
-
-// Get Student Profile by Student Code
-export const getStudentProfile = asyncHandler(async (req: Request, res: Response) => {
-    const { studentCode } = req.params;
-
-    const student = await Student.findOne({ studentCode }).populate('enrolledCourses currentCourses bookedSessions');
-
-    if (!student) {
-        throw new ApiError(404, 'Student not found.');
+    if (currentCourses.length < 1 || skills.length < 1) {
+        throw new ApiError(400, 'Please provide at least one course and skill');
     }
 
-    res.status(200).json(new ApiResponse(200, student, 'Student profile retrieved successfully.'));
+    const student = (await Student.create({ _id: userId, studentCode, currentCourses, skills })).populate('currentCourses');
+
+    if (!student) {
+        throw new ApiError(500, 'Error Occured While Creating Student in Database');
+    }
+
+    return res.status(200).json(new ApiResponse(200, 'Student profile setup successful', student));
 });
+export default profileSetup;
